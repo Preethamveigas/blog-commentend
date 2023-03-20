@@ -1,10 +1,25 @@
 steps:
+  #unit test cases 
+- name: 'gcr.io/cloud-builders/npm'
+  args: ['install']
+- name: 'gcr.io/cloud-builders/npm'
+  args: ['test']
+#sonarqube code coverage 
+- name: 'gcr.io/niveus-cici-demo/sonar-scanner:latest'
+  args:
+  - '-Dsonar.host.url=https://sonarcloud.io'	  
+  - '-Dsonar.login=e5f2827bf0321743ddfa267bd90d0ac0a4273798'	  
+  - '-Dsonar.projectKey=comment'	  
+  - '-Dsonar.organization=demo-niveus'	
+  - '-Dsonar.sources=.'
+#   - '-Dsonar.test.inclusions=*/workspace'
+# #   - '-Dsonar.language=ts'
   # build the container image
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/niveusgcp/cloud-commentend', '.', ]
+  args: ['build', '-t', 'gcr.io/niveus-cici-demo/blog-comment', '.', ]
   # push the container image to Container Registry
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/niveusgcp/cloud-commentend']
+  args: ['push', 'gcr.io/niveus-cici-demo/blog-comment']
   # Deploy container image to Cloud Run
 - name: 'gcr.io/cloud-builders/gcloud'
-  args: ['beta','run','deploy','cloud-commentend', '--set-env-vars', 'an_env_var=${TAG_NAME}', '--image', 'gcr.io/niveusgcp/cloud-commentend', '--region', 'us-central1', '--quiet']
+  args: ['beta','run','deploy','blog-comment','--platform=managed', '--set-env-vars', 'an_env_var=${TAG_NAME}', '--image', 'gcr.io/niveus-cici-demo/blog-comment', '--region', 'us-central1', '--quiet']
